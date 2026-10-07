@@ -2,9 +2,15 @@ from app.errors import AppError
 
 
 class UnconfiguredProvider:
-    name = "openai"
     configured = False
-    message = "AI provider not configured. Add OPENAI_API_KEY to backend/.env."
+
+    def __init__(
+        self,
+        message: str = "AI provider not configured. Add a free GROQ_API_KEY to backend/.env.",
+        name: str = "groq",
+    ) -> None:
+        self.message = message
+        self.name = name
 
     def classify_email(self, payload: dict) -> dict:
         raise AppError(self.message, status_code=503)

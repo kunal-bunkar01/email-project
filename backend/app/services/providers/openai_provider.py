@@ -55,13 +55,18 @@ risk_score and confidence are numbers from 0 to 1. HIGH risk must use HUMAN_REVI
 
 
 class OpenAIProvider:
-    name = "openai"
-
-    def __init__(self) -> None:
+    def __init__(self, name: str = "openai", api_key: str = "", model: str = "", base_url: str | None = None) -> None:
         settings = get_settings()
-        self.configured = bool(settings.openai_api_key.strip())
-        self._model = settings.openai_model or "gpt-4o-mini"
-        self._client = OpenAI(api_key=settings.openai_api_key, timeout=40.0) if self.configured else None
+        self.name = name or settings.active_llm
+        resolved_key = api_key or settings.llm_api_key
+        self.configured = bool(resolved_key)
+        self._model = model or settings.llm_model
+        self._json_mode = True
+        client_kwargs: dict = {"api_key": resolved_key, "timeout": 45.0}
+        resolved_base = base_url if base_url is not None else settings.llm_base_url
+        if resolved_base:
+            client_kwargs["base_url"] = resolved_base
+        self._client = OpenAI(**client_kwargs) if self.configured else None
 
     def classify_email(self, payload: dict) -> dict:
         return self._complete(CLASSIFY_SYSTEM, _email_prompt(payload), temperature=0.1)
@@ -80,7 +85,7 @@ class OpenAIProvider:
 
     def _complete(self, system: str, user: str, temperature: float) -> dict:
         if not self._client:
-            raise AppError("AI provider not configured. Add OPENAI_API_KEY to backend/.env.", status_code=503)
+            raise AppError(get_settings().ai_status_message, status_code=503)
         last_error = "invalid response"
         messages = [
             {"role": "system", "content": system},
@@ -88,12 +93,14 @@ class OpenAIProvider:
         ]
         for attempt in range(2):
             try:
-                response = self._client.chat.completions.create(
-                    model=self._model,
-                    temperature=temperature,
-                    response_format={"type": "json_object"},
-                    messages=messages,
-                )
+                request: dict = {
+                    "model": self._model,
+                    "temperature": temperature,
+                    "messages": messages,
+                }
+                if self._json_mode:
+                    request["response_format"] = {"type": "json_object"}
+                response = self._client.chat.completions.create(**request)
                 content = response.choices[0].message.content or ""
                 return parse_model_json(content)
             except (json.JSONDecodeError, ValueError) as exc:
@@ -113,10 +120,17 @@ class OpenAIProvider:
                 logger.warning("ai_connection_failed model=%s", self._model)
                 raise AppError("The AI provider is unavailable. Please try again.", status_code=503) from None
             except OpenAIError as exc:
-                logger.error("ai_call_failed error=%s", scrub(str(exc)))
+                detail = scrub(str(exc)).lower()
+                if self._json_mode and "response_format" in detail:
+                    self._json_mode = False
+                    logger.info("ai_json_mode_disabled provider=%s", self.name)
+                    continue
+                logger.error("ai_call_failed provider=%s error=%s", self.name, scrub(str(exc)))
                 message = "Unable to complete the AI step right now. Please try again."
                 if getattr(exc, "status_code", None) in {401, 403}:
-                    message = "The OpenAI API key was rejected. Check OPENAI_API_KEY in backend/.env."
+                    message = f"The {self.name} API key was rejected. Check it in backend/.env."
+                if getattr(exc, "status_code", None) == 429:
+                    message = "The free model limit was reached. Wait a minute and try again."
                 raise AppError(message, status_code=502) from None
         logger.error("ai_invalid_json_final error=%s", last_error)
         raise AppError("The AI provider returned an unreadable result. Please try again.", status_code=502)

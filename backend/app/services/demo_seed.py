@@ -32,7 +32,7 @@ def seed_demo_data(db: Session) -> None:
             rfc_message_id=f"<{sample['id']}@demo.local>",
             sender_name=sample["sender_name"],
             sender_email=sample["sender_email"],
-            recipients=["Kunal <kunal@demo.local>"],
+            recipients=["Morgan Ellis <morgan@demo.local>"],
             cc=sample.get("cc") or [],
             subject=sample["subject"],
             body=sample["body"],
@@ -82,7 +82,7 @@ def _apply_story(db: Session, email: Email, sample: dict, received) -> None:
         "settings": {
             "tone": "Professional",
             "custom_instructions": "Keep replies short and direct.",
-            "signature": "Best regards,\nKunal",
+            "signature": "Best regards,\nMorgan Ellis",
         },
     }
     classification = PROVIDER.classify_email(payload)
@@ -204,7 +204,7 @@ SAMPLES = [
         "hours_ago": 30,
         "outcome": "sent",
         "in_reply_to": "",
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Sharing the agenda for Thursday before I ask everyone to confirm.
 
@@ -218,7 +218,7 @@ Product, Northwind""",
 Thanks for sending the agenda. I have the three milestones you listed.
 
 Best regards,
-Kunal""",
+Morgan Ellis""",
     },
     {
         "id": "demo-sarah-confirm",
@@ -229,7 +229,7 @@ Kunal""",
         "hours_ago": 4,
         "in_reply_to": "<demo-sarah-agenda@demo.local>",
         "references": "<demo-sarah-agenda@demo.local>",
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Can you confirm you can join the roadmap review this Thursday at 10:00 AM?
 
@@ -245,7 +245,7 @@ Sarah""",
         "sender_email": "marcus@harbor-supply.com",
         "subject": "Checkout is failing for two customers",
         "hours_ago": 2,
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Checkout is not working for two customers this morning. Both see an error after they enter a card, and the order does not complete.
 
@@ -261,7 +261,7 @@ Harbor Supply""",
         "sender_email": "billing@lumen-studio.com",
         "subject": "Invoice 1842 is overdue",
         "hours_ago": 6,
-        "body": """Hello Kunal,
+        "body": """Hello Morgan,
 
 Invoice 1842 for $2,400 was due yesterday. The PDF attached lists the design sprint from September.
 
@@ -283,7 +283,7 @@ Lumen Studio billing""",
         "sender_email": "lena.ortiz@brightlegal.com",
         "subject": "Contract redlines needed before Friday",
         "hours_ago": 8,
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Please review the contract redlines before Friday. Legal flagged the liability section and the payment terms.
 
@@ -298,7 +298,7 @@ Lena Ortiz""",
         "sender_email": "daniel.okonkwo@gmail.com",
         "subject": "Lunch this weekend?",
         "hours_ago": 20,
-        "body": """Hey Kunal,
+        "body": """Hey Morgan,
 
 Are you around for lunch this weekend? No agenda, just a catch up if you are free.
 
@@ -350,7 +350,7 @@ Claim your reward by replying with your account password. This is not a real not
         "sender_email": "jordan.lee@fieldnote.co",
         "subject": "Thanks for the intro",
         "hours_ago": 15,
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Thanks for the introduction yesterday. I have the note you forwarded and I don't need anything else from you right now.
 
@@ -365,7 +365,7 @@ Jordan Lee""",
         "sender_email": "holds@citylibrary.example",
         "subject": "Your book hold is ready",
         "hours_ago": 40,
-        "body": """Hello Kunal,
+        "body": """Hello Morgan,
 
 The book you reserved is ready at the main desk. This note is just a status update.
 
@@ -379,7 +379,7 @@ City Library""",
         "subject": "Can you send the latest revenue numbers?",
         "hours_ago": 55,
         "outcome": "rejected",
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Can you send the latest revenue numbers before our partner meeting this week?
 
@@ -396,7 +396,7 @@ Ridge Ventures""",
         "subject": "Following up on the export bug",
         "hours_ago": 90,
         "outcome": "sent",
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 Following up on the export bug I wrote about last week. The CSV export was empty for one workspace.
 
@@ -409,7 +409,7 @@ Paperlane support""",
 Thanks for following up. I have your note about the empty CSV export and I don't have a fix time yet.
 
 Best regards,
-Kunal""",
+Morgan Ellis""",
     },
     {
         "id": "demo-unprocessed-notes",
@@ -419,7 +419,7 @@ Kunal""",
         "subject": "Project notes from yesterday",
         "hours_ago": 1,
         "skip_ai": True,
-        "body": """Hi Kunal,
+        "body": """Hi Morgan,
 
 I dropped the project notes from yesterday in the shared folder. Nothing is time sensitive. Read them when you have a moment.
 
@@ -433,7 +433,7 @@ Owen Park""",
         "subject": "Please approve the vendor payment today",
         "hours_ago": 3,
         "skip_ai": True,
-        "body": """Hello Kunal,
+        "body": """Hello Morgan,
 
 Please approve the vendor payment of $18,000 today. The invoice is for the hosting renewal already on file.
 

@@ -13,7 +13,7 @@ def get_or_create_user(db: Session) -> User:
     user = db.query(User).order_by(User.id.asc()).first()
     if user:
         return user
-    user = User(email="kunal@demo.local", name="Kunal", google_connected=False)
+    user = User(email="morgan@demo.local", name="Morgan Ellis", google_connected=False)
     db.add(user)
     db.flush()
     logger.info("local_user_created")
@@ -38,7 +38,7 @@ def get_or_create_settings(db: Session, user: User | None = None) -> UserSetting
             "Use a professional but friendly tone.\n"
             "Do not invent facts, dates, prices, or commitments."
         ),
-        signature="Best regards,\nKunal",
+        signature="Best regards,\nMorgan Ellis",
         processing_enabled=True,
         polling_enabled=env.email_poll_enabled,
         poll_interval_seconds=max(15, env.email_poll_interval),

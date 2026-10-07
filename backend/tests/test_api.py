@@ -107,7 +107,7 @@ def test_settings_roundtrip_and_demo_sync(client):
             "auto_send_min_confidence": 0.9,
             "auto_send_max_risk": "LOW",
             "tone": "Concise",
-            "signature": "Best regards,\nKunal",
+            "signature": "Best regards,\nMorgan Ellis",
             "polling_enabled": False,
             "poll_interval_seconds": 120,
             "review_high_urgency": True,

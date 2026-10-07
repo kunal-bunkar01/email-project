@@ -168,18 +168,27 @@ In the app, open **Settings** and choose **Connect Gmail**. After Google sends y
 
 Background polling is optional. Turn it on under Settings → Processing, or set `EMAIL_POLL_ENABLED=true`. The app works with polling off. Sync still runs when you click the button. Polling uses a normal Python background task. It does not need Redis or Celery.
 
-## OpenAI setup
+## Free AI model
 
-Required only when `DEMO_MODE=false`.
+OpenAI's own API is paid. This project can use Groq's free tier instead. Groq serves open models through the same style of API, with a daily request limit and no charge on the free plan.
+
+1. Open [console.groq.com/keys](https://console.groq.com/keys) and create a free API key.
+2. In `backend/.env` set:
 
 ```env
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
+DEMO_MODE=false
+LLM_PROVIDER=groq
+GROQ_API_KEY=gsk_your_free_key
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
-The rest of the app talks to an `AIProvider` interface. `OpenAIProvider` is the live implementation. `DemoProvider` is the local stand-in. Another provider can be added later without rewriting the pipeline.
+3. Restart the backend.
 
-If a model call fails, times out, or returns invalid JSON, the email stays unprocessed or failed. Sable does not send it.
+A lighter free model, if you hit the daily limit, is `llama-3.1-8b-instant`. Google AI Studio is another free option: set `LLM_PROVIDER=gemini` and `GEMINI_API_KEY`. Paid OpenAI still works with `LLM_PROVIDER=openai` and `OPENAI_API_KEY`.
+
+Each email makes a few model calls, so a large sync can reach the free daily cap. When that happens the email stays unprocessed and nothing is sent.
+
+The pipeline talks to an `AIProvider` interface. Demo mode, Groq, Gemini, and OpenAI all use that same path.
 
 ## How a message moves
 
